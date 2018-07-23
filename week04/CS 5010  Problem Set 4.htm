@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
+<!-- saved from url=(0059)http://www.ccs.neu.edu/course/cs5010/problem-sets/ps04.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<title>CS 5010: Problem Set 4</title>
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 4_files/course.css">
+<style>
+ .new {color:red;}
+ .strike {color:gray; text-decoration:line-through;}
+</style>
+</head>
+
+<body>
+<h1>CS 5010: Problem Set 4</h1>
+
+<!-- Be sure to change the problem set number both in the title and -->
+<!-- the h1! -->
+
+<p>
+<strong>Out:</strong> Tuesday, October 9, 2012
+
+</p><p><strong>Due:</strong> Wednesday, October 17, 2012,
+at 600pm.
+</p>
+
+<p>
+The goal of this problem set is to help you design and use
+multiply-recursive and mutually-recursive data definitions, and to
+give you practice using the list abstractions and HOFC.
+</p>
+
+<p>Remember that you must follow the design recipe. </p>
+
+<p>You must use DrScheme's HtDP Intermediate Student Language with
+  Lambda.</p>
+
+
+<hr>
+
+<h2>Finger Exercises/Drill Problems:</h2>
+
+<ol><span>
+  <li>A <em><a href="http://en.wikipedia.org/wiki/Quadtree">quadtree</a></em> is like a binary tree, but every node has
+  four descendants.  Quadtrees are often used for representing
+  2-dimensional spaces.  Here's a data definition for a quadtree:
+
+<pre>(define-struct quadtree (data nw ne sw se))
+A Quadtree is one of
+-- empty
+-- (make-quadtree Number Quadtree Quadtree Quadtree Quadtree)
+Interp:
+data  : a number representing the value at point
+nw, ne, sw, se : quadtrees representing the data in the four quadrants
+around the point
+</pre>
+
+  Write functions to find the sum of all the data in the quadtree, the
+  largest datum in the quadtree, and the smallest data in the
+  quadtree.  Then write <kbd>quadtree-fold</kbd>.
+  </li>
+</span>
+</ol>
+
+<p>
+
+</p><hr>
+
+<h2>Required Exercises</h2>
+
+<ol> <p></p>
+
+  <li>In this problem, you will design and implement a system for a
+  graphical interface for trees.  Your system will allow you to create
+  and manipulate trees on a canvas.  It should have the following
+  properties:
+  <p></p>
+
+  <ol>
+    <li>The canvas starts empty.</li>
+
+    <li>Nodes of the tree are rendered as green outline circles of a
+  fixed radius.  The default value for the radius is 10, but your
+  system should allow you to change the radius for the next run by
+  changing a single line of your code. You can select a node by
+  clicking on it, as in previous problems.  Selected nodes are
+  displayed as green solid circles (with one exception, see
+  below). Clicking on a node selects only the node, not its sons. </li>
+
+  <li>When the tree is displayed, there should be a straight blue line
+  from the center of a node to the center of each of its sons.</li>
+
+  <li> Dragging a selected node causes the entire tree rooted at that
+  node to be dragged.  The relative positions of all the nodes in
+  subtree should stay the same.  It is ok if this action causes some
+  nodes to be moved off the edge of the canvas; if the node is moved
+  again so that they are now back on the canvas, they should reappear
+  in the proper place.</li>
+
+  <li> Hitting "t" at any time creates a new root node in the center of the top
+  of the canvas. The root appears tangent to the top of the canvas and
+  initially has no sons.</li>
+
+  <li> Hitting "n" while a node is selected adds a new son, positioned
+  4 radii down from the parent and 3 radii to the left of the
+  currently leftmost son (measured center-to-center), provided there
+  is room for the entire son to appear on the canvas.  If a selected
+  node ever moves into a position so that there is no room for the
+  son, it should appear as red solid rather than green, and "n" has no
+  effect. The first son of a node should appear 4 radii down and
+  directly beneath the node.</li>
+
+  <li> Hitting "d" while a node is selected deletes the node and its
+  whole subtree. </li>
+
+  </ol> <!-- end requirements list -->
+
+<p>  Your solution should provide the following functions:</p>
+
+  <pre>initial-world : Any -&gt; World
+Ignores its argument and returns an initial world
+ 
+run :  Any -&gt; World
+Ignores its argument and runs a copy of the initial world, returning
+the final world 
+
+world-after-mouse-event : World Number Number MouseEvent -&gt; World
+
+world-after-key-event : World KeyEvent -&gt; World
+ 
+world-to-trees : World -&gt; ListOf&lt;Tree&gt;
+ 
+tree-to-root-node : World Tree -&gt; Node
+ 
+node-to-sons : World Tree Node -&gt; ListOf<node>
+
+node-to-center : World Tree Node -&gt; Posn
+Returns the center of the node as it is to be displayed on the scene.
+ 
+node-to-selected? : World Tree Node -&gt; Boolean
+
+node-room-for-son? World Tree Node -&gt; Boolean
+</node></pre>
+
+<p>These functions have the purpose statements suggested by their
+  names.  If you don't think you need the World or Tree arguments for
+  some of these functions, don't worry:  we have put these arguments
+  in the contract because they might be needed for some
+  implementations.  However, your implementation should always follow
+  the contracts as given, even if it ignores some of the
+  arguments.</p>
+
+  <p>Also, you may choose to represent Tree and Node identically; that
+  is up to you.</p>
+
+  <p>Here's a small demo:</p>
+
+<p></p><center>
+  <iframe src="./CS 5010  Problem Set 4_files/ps04-draggable-trees.htm" width="330" height="448"></iframe>
+</center> 
+<p></p>
+
+
+  </li>	<!-- end question 1 -->
+
+  <li>Consider the following definition of expressions:
+
+<pre>(define-struct sum-exp (exprs))
+(define-struct mult-exp (exprs))
+
+;; An Expr is one of
+;; -- Number
+;; -- (make-sum-exp LOExpr)
+;; -- (make-mult-exp LOExpr)
+;; Interpretation: a sum-exp represents a sum and a mult-exp
+;; represents a multiplication. 
+
+;; A LOExpr is one of
+;; -- empty
+;; -- (cons Expr LOExpr)
+</pre>  
+
+  <p></p>
+
+  <ol>
+    <li>Write the following functions:
+
+<pre>value-of : Expr -&gt; Number
+Returns the value of the expression as a number
+
+operator-count : Expr -&gt; Number
+Returns the number of arithmetic operations in the given expression.
+For example,
+(operator-count
+  (make-sum-exp
+    (list
+      (make-mult-exp (list 22 3333 44))
+      (make-mult-exp (list 5555 66))
+      (make-sum-exp (list 77 88)))))
+should equal 4.
+
+operand-count : Expr -&gt; Number
+Returns the number of arithmetic constants in the given expression.
+For example,
+(operand-count
+  (make-sum-exp
+    (list
+      (make-mult-exp (list 22 3333 44))
+      (make-mult-exp (list 5555 66))
+      (make-sum-exp (list 77 88)))))
+should equal 7.
+
+expr-to-image : Expr -&gt; Image
+Renders the given expression as an image (see description below)
+</pre>
+
+  <p> The function expr-to-image places the first subexpression of a
+  sum or multiplication expression on the same line as the
+  operator, separated by one space.  The remaining subexpressions are
+  rendered vertically, with their left edges aligned with the first
+  subexpressions.  The closing parenthesis of each expression appears
+  on its last line. Here's an example:</p>
+
+ <img src="./CS 5010  Problem Set 4_files/ps04-render.jpg">
+
+  <p>    In an ideal world, there would be no spaces before
+  closing parentheses, but that requires programming knowledge that
+  you do not have yet.  (Be warned: we are likely to ask this question
+  again when you do!)  </p>
+
+    </li>
+
+    <li>Write a fold function <kbd>expr-fold</kbd> for Exprs.  When
+    you are done, you should be able to redefine 
+    <kbd>value-of</kbd> as
+
+    <pre>(define (value-of expr)
+  (expr-fold (lambda (n) n) sum product expr))
+</pre>
+    where <kbd>sum</kbd> and <kbd>product</kbd> find the sum and
+    product of a list of numbers.
+
+    <p>Write down the contract for expr-fold, and rewrite each of
+    the functions above using expr-fold.  As you did in the previous
+    problem set, comment out your original versions of each function
+    with <kbd>#;</kbd>, so that your tests run on the new version.</p>
+
+    <p>Remember that a LOExpr is a list, so you can use the list
+    abstractions on page 300 on LOExprs.</p>
+
+    <p>Your solution should <kbd>provide</kbd> the following
+    functions: expr-fold, make-sum-exp, make-mult-exp, value-of,
+    operator-count, operand-count, expr-to-image.</p>
+
+    </li> 
+  </ol>
+</li>
+
+
+
+
+<p><strong>Hints:</strong></p>
+
+<ul>
+  
+  <li> Follow the design recipe!!  If you write good data definitions,
+  and follow the templates, you will be led to a good solution.  If
+  you stray from the templates, you <strong>will</strong> create a
+  mess.  If you are following your templates and still creating a
+  mess, try an alternate path.  For example, if you are doing
+  structural decomposition on one data type, followed immediately by
+  structural decomposition on another data type, try doing them in the
+  other order.</li>
+  
+  <li>The built-in abstraction functions, like map, foldr, and filter,
+are your friends.  Use them wherever it feasible to do so.  As before,
+you may want to write your functions using explicit recursions, and
+then rewrite them using the abstractions and higher-order function
+combination.  You will be penalized for recursions in your code that
+"obviously" could have been replaced by HOFC.</li>
+
+</ul>
+
+
+
+
+
+
+
+</ol>
+
+<hr>
+<address></address>
+<font size="-1">
+<p align="right">
+<!-- hhmts start -->
+Last modified: Wed Oct 10 10:10:18 -0400 2012 <!-- hhmts end -->
+ 
+</p></font><div><embed id="lingoes_plugin_object" type="application/lingoes-npruntime-capture-word-plugin" hidden="true" width="0" height="0"></div></body></html>

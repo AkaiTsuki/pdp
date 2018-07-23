@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
+<!-- saved from url=(0059)http://www.ccs.neu.edu/course/cs5010/problem-sets/ps06.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<title>CS 5010: Problem Set 6</title>
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 6_files/course.css">
+<style>
+ .new {color:red;}
+ .strike {color:gray; text-decoration:line-through;}
+</style>
+</head>
+
+<body>
+<h1>CS 5010: Problem Set 6</h1>
+
+<!-- Be sure to change the problem set number both in the title and -->
+<!-- the h1! -->
+
+<p>
+<strong>Out:</strong> Tuesday, October 23, 2012
+
+</p><p><strong>Due:</strong> Wednesday, October 31, 2012
+at 600pm.
+</p>
+
+<p> The goal of this problem set is to give you practice using general
+recursion and accumulators. </p>
+
+
+<p>Remember that you must follow the design recipe. </p>
+
+<p>For each function that you write using general recursion (not just
+structural decomposition with or without accumulator), you must be
+prepared to identify:
+
+</p><ul>
+  <li>which are the trivial cases</li>
+  <li>for each non-trivial case, where and how you divided the problem
+  into sub-problems.</li> 
+  <li>for each non-trivial case, how you built the solution to the
+  original problem from the solutions to the subproblems.</li>
+  <li>for each non-trivial case, whether or not it recurs on a substructure
+  of one of the arguments.</li>
+</ul>
+
+<p>Remember that every function that uses general recursion must have
+either a halting measure (if it always halts) <strong>or a comment that it
+sometimes does not halt.</strong> (sorry, we didn't get to this in class.)
+If it sometimes does not halt, write something like this:
+
+</p><pre>TERMINATION ARGUMENT:  Does not halt on <em>[describe arguments that
+cause non-termination].</em>
+INCOMPLETE HALTING MEASURE: The measure <em>[write plausible halting
+measure here]</em> works on all cases except <em>[list the recursive
+calls in your function where your halting measure is not guaranteed to
+decrease]</em>.
+</pre>
+
+<p>Also, it is ok for a function using general recursion to call
+itself via a help function.</p>
+
+<p> Every time you have an argument that is collecting
+context, you must clearly identify it as an accumulator, and document
+the context information it represents, either by writing
+GIVEN.. WHERE.. RETURNS.. or by writing INVARIANT ... .</p>
+
+
+
+
+<p>You must use DrScheme's HtDP Intermediate Student Language with
+  Lambda. Use refactoring to avoid duplication whenever it is
+  helpful.  Use list abstractions like filter, fold, and map whenever
+  they are helpful.  As in past problems, you will be penalized if you
+  fail to see clear occasions for their use. Similarly, you will be
+  penalized if you fail to abstract over repeated patterns of code.</p>
+
+<hr>
+
+<h2>Finger Exercises:</h2>
+
+<p>No finger exercises this week.</p>
+
+<hr>
+
+<h2>Required Exercises</h2>
+
+<ol>
+
+<li>You have taken a job at a robot factory.  The robots your factory
+  builds are circles of radius 20 that move around a 200 x 200
+  canvas. (Watch the video of the <a href="http://www.irobot.com/us/robots/home/roomba.aspx">Roomba</a>).  At every step, the robot can move forward, move
+  backward, or rotate 90 degrees either right or left.  The robot can
+  also sense when it has run into a wall.
+
+
+<!--  containing a little triangle that shows the -->
+<!-- direction he is pointing.  This image might be defined by something -->
+<!-- like -->
+
+<!-- <pre> -->
+<!-- (overlay (isosceles-triangle 35 35 "solid" "green") -->
+<!--          (circle 20 "outline" "red"))) -->
+<!-- </pre> -->
+
+<p> Your boss comes to you and asks you to implement a little language
+   for controlling these robots.  The robot language is defined as follows:
+</p>
+<pre>cmd ::= forward(n)
+    ::= right(n)
+    ::= left(n)
+    ::= do-times(n)cmd
+    ::= {cmd; ...}     (a semicolon-separated list of commands,
+                        possibly empty)
+    ::= if-facing-edge then cmd else cmd
+    ::= while-not-facing-edge-do cmd
+n   ::= any non-negative integer
+</pre>
+The commands are interpreted as follows:
+
+<pre>forward(n)                    move forward n steps
+right(n)                      turn right (clockwise) n*90 degrees
+left(n)                       turn left (counterclockwise) n*90 degrees
+do-times(n)cmd                do cmd n times
+{cmd; ...}                    do the commands in sequence
+if-facing-edge then cmd else cmd
+                              if the robot is facing the edge of the
+                              canvas, do the first command,
+                              otherwise do the second command
+while-not-facing-edge-do cmd  repeat cmd until the robot is facing the edge
+                              of the board (possibly 0 times)
+</pre>
+
+<p> We say the robot is facing the edge of the canvas if a
+forward motion would take the robot past the edge.</p>
+
+<p>We imagine that the edges of the canvas are walls. The robot does
+not bounce off walls; like a good, obedient robot, it keeps trying to
+do what you tell it.  Therefore, if a forward(n) would
+move the robot past any edge of the canvas, the robot should stop as
+soon as it reaches any edge.  It should continue to execute the
+program, but it will not move until the program has it take a path
+that no longer tries to move it past the edge.</p>
+
+<!-- <p>For example, if the robot is at (12,15), travelling northwest, a -->
+<!-- forward(20) command will leave the robot at (10,13).  Can you see why?</p> -->
+
+<p>The robot starts in the center of the canvas, facing north.</p>
+
+<p>The result of your program will be the final position and direction
+of the robot, and the total distance it has travelled, in pixels.
+Forward or backward moves while it is stuck against a wall don't
+count.  You should report your result using the following data
+definition: </p>
+
+<pre>(define-struct robot (x y heading odometer))
+
+A Robot is a (make-robot Number Number Direction Number)
+Interpretation:
+x, y      are the coordinates of the center of the robot
+heading   is the direction it is facing
+odometer  is the total number of pixels it has travelled
+</pre>
+
+<p>You are free to choose your own representation of Directions, but
+you must provide an API as listed below.</p>
+
+For example, running the program
+<pre>do-times (4) {forward(15); if-facing-edge then left(1) else right(1)}
+</pre>
+should produce the robot
+<pre>(make-robot 100 100 north 60)
+</pre>
+where <kbd>north</kbd> is your representation of the direction "north."
+
+Running the program
+<pre>{left(1); forward(200); left(1)}
+</pre>
+should produce the robot
+<pre>(make-robot 20 100 south 80)
+</pre>
+where <kbd>south</kbd> is your representation of the direction "south".
+
+<!-- <p>If your robot travels in a diagonal direction, you will need to do -->
+<!-- some trigonometry to determine its final position.  This means we will -->
+<!-- have to worry about roundoff errors. You can use <kbd>check-=</kbd> with a -->
+<!-- tolerance of 0.1 for your tests, and we will do the same thing.</p> -->
+
+<!-- <p> Make sure there are no magic constants in your tests, so that your -->
+<!-- tests will be sure to work on our machines. In particular, you should -->
+<!-- use the ISL constant <kbd>pi</kbd> as your value of pi. </p> -->
+
+<p>Here are your deliverables:</p>
+
+<ol>
+  <li> Write a data definition called <kbd>Cmd</kbd> for an internal
+  representation of the commands in this language.  This should be a
+  self-referential, mixed data type like the ones we studied back in
+  Lecture 2.</li>
+
+  <li>You must provide the following functions:</li>
+
+  <pre>robot-after-cmd : Cmd Robot -&gt; Robot
+Takes a command and produces the robot that should follow the given
+robot after running the command.
+
+make-robot : Number Number Direction Number -&gt; Robot
+robot-x : Robot -&gt; Number
+robot-y : Robot -&gt; Number
+robot-heading : Robot -&gt; Direction
+robot-odometer : Robot -&gt; Number
+
+north, east, south, west : Direction
+direction=? : Direction Direction -&gt; Boolean
+</pre>
+
+</ol>
+
+<p>We will not be displaying or animating the robot this
+  week (but who knows what will happen next week!).  </p>
+
+<p>Sometime after 6pm on the due date, we will give you a list of
+robot programs to run.  Sometime before your codewalk, you will have
+to translate these into your internal representation so that we can
+test your interpreter.</p>
+
+</li>
+
+
+<li> Your robot language is a big success.  After a few days, your
+boss at the robot works tells you that he has been reading <a href="http://lambda-the-ultimate.org/">lambda-the-ultimate.org</a>,
+and he has learned about a fantastic new web language that is supposed
+to make XML, JSON, etc., obsolete.  <p></p>
+
+<p>He says: "have you heard about these things called S-expressions?"
+You are happy to tell him that of course you have.  He says that he is
+really excited, and has decided to give your robot language
+an S-expression interface.</p>
+
+<p>From now on, he says, the commands of the robot language
+will consist of S-expressions, as follows:</p>
+
+<pre>(forward n)                  
+(right n)                    
+(left n)                     
+(do-times n cmd)             
+(cmd ...)                    
+(if-facing-edge cmd cmd)     
+(while-not-facing-edge-do cmd)   
+</pre>
+
+  <p>Here we've used <kbd>write</kbd> notation, as we did for the
+  outline problem last week, <kbd>cmd</kbd> means any command (in the
+  S-expression representation, of course), and <kbd>n</kbd> is any
+  number.</p>
+
+<p>So the program in question 1, which we wrote as</p>
+
+<pre>do-times (4) {forward(15); if-facing-edge then left(1) else right(1)}
+</pre>
+
+would now be written (in <kbd>write</kbd> notation) as the S-expression
+
+<pre>(do-times 4 ((forward 15) (if-facing-edge (left 1) (right 1))))
+</pre>
+
+<p>Your solution should define the following data definition:</p>
+
+<pre>An SexpOfAtom is one of
+-- a Symbol
+-- a Number
+-- a ListOf&lt;SexpOfAtom&gt;
+</pre>
+
+<p>  Design and provide the following functions:
+</p>
+  <pre>decode : SexpOfAtom -&gt; Maybe&lt;Cmd&gt;
+Takes an S-expression and produces the Cmd that represents it, or
+false if the S-expression does not correspond to any Cmd.
+Example: (decode '(forward 10)) = (make-forward 10)
+</pre>
+
+</li>
+
+<li>Now you need to put these two pieces together.  Write a file
+called 3.rkt.  It should require 1.rkt and 2.rkt, and provide the
+following function:</li>
+
+<pre>run : SexpOfAtom -&gt; Maybe&lt;Robot&gt;
+Takes an S-expression, decodes it, and runs the resulting Cmd through
+the function interpret from problem 1.  Returns false if the
+S-expression is not a representation of any command.
+</pre>
+
+<p>It must also provide the constructors and selectors for
+<kbd>robot</kbd>, as you did in question 1.</p>
+
+</ol>
+
+For what it's worth, my solution to this problem was 287 lines + tests.
+
+
+<hr>
+<address></address>
+<font size="-1">
+<p align="right">
+<!-- hhmts start -->
+Last modified: Tue Oct 23 14:58:44 -0400 2012 <!-- hhmts end -->
+ 
+</p></font><div><embed id="lingoes_plugin_object" type="application/lingoes-npruntime-capture-word-plugin" hidden="true" width="0" height="0"></div></body></html>

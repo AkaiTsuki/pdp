@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0062)http://www.ccs.neu.edu/home/wand/cs5010/problem-sets/ps01.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+<title>CS 5010: Problem Set 1</title>
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 1_files/course.css">
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 1_files/problem-sets.css">
+
+</head>
+<body>
+<h1>CS 5010: Problem Set 1</h1>
+
+<p>
+<strong>Out:</strong> Tuesday, September 11, 2012
+
+</p><p><strong>Due:</strong> Wednesday, September 19, 2012 at 600pm
+</p>
+
+<!-- median tot for this problem set in Fall 2010 was 17.4 hrs (about -->
+<!-- right) -->
+<!-- median tot for this problem set in Fall 2011 was 18.5 hrs (about right) -->
+
+<!-- See Google spreadsheet for collected problem sets and TOTs -->
+
+
+<p>
+The goal of this problem set is to help you design functions that deal
+with finite data.</p>
+
+<p>You must use the HtDP Beginning Student Language to solve the
+  problems.  </p>
+
+<p>For these problems, make a copy of <a href="http://www.ccs.neu.edu/home/wand/cs5010/problem-sets/extras.rkt">extras.rkt</a> and put it in the
+folder with your solutions.  Then import this library by including the line
+
+</p><pre>(require "extras.rkt")
+</pre>
+
+at the top of your file with the other requires.  Then, for each
+problem, put in lines that say
+
+<pre>(provide <em>function</em>)
+</pre>
+
+for each deliverable function.  Thus, for problem 1, the top of your
+file should say
+
+<pre>(require rackunit)
+(require rackunit/textui)
+(require "extras.rkt")
+
+(provide make-editor)
+(provide editor-pre)
+(provide editor-post)
+(provide edit)
+</pre>
+<p></p>
+
+<p>This will allow our testing framework to import your file and do
+automated testing on it.</p>
+
+
+<p>Remember that you must follow the design recipe.  Your deliverables
+  include the data definitions (including interpretation and
+  templates), contract and purpose header, code, and tests.  You must
+  also include the laboratory notebook.</p>
+
+<p>This problem set consists of two parts:  Finger Exercises, which
+are relatively easy problems designed to get you used to the material,
+and Required Exercises.  You will turn in only the Required Exercises.
+We highly recommend that you do some of the finger exercises; if you
+do so, you should put them in a directory called finger-exercises in
+your svn.</p>
+
+<hr>
+
+<h2>Finger Exercises</h2>
+
+<p><!-- All but the last of these -->
+These are exercises in <a href="http://www.ccs.neu.edu/home/matthias/HtDP2e/htdp2e-part1.html">Chapter 2</a> of HtDP2e </p> <ol>
+  
+  <li>Exercise 57 (time-structure)</li>
+  <li>Exercise 60 (templates)</li>
+  <li>Exercise 61 (time-&gt;seconds) </li>
+<!--   <li>Modify the falling-cat program in two ways:<p></p> -->
+<!--   <ul> -->
+<!--     <li>Make the cat accelerate under -->
+<!--   gravity.  Make up a value for gravity that makes it visually clear -->
+<!--   that your simulation is working properly. Be sure that your -->
+<!--   documentation includes the dimensions for your gravitational -->
+<!--   constant.</li> -->
+<!--   <li>Have the cat respond to the "f" key.  If the cat is falling, the -->
+<!--   "f" key should make the cat instead float upwards like a balloon, at -->
+<!--   constant speed.  If the cat is floating upwards, the "f" key should -->
+<!--   make it fall again.</li> -->
+<!-- </ul> </li> -->
+
+</ol>
+
+<hr>
+
+<h2>Required Exercises</h2>
+
+
+<ol>
+
+  <li>(Tiny Text Editor) Do exercise  64 (the
+  function "edit") 
+  from the second edition of HtDP. The contract for edit should be
+  <pre>edit : Editor KeyEvent -&gt; Editor
+</pre>
+
+<p>Your file should provide the following functions:</p>
+
+  <pre>make-editor
+editor-pre
+editor-post
+edit
+</pre>
+
+</li>
+
+  <!-- Next time: include some nested tests -->
+
+  <li> Here is the data definition for a very small programming
+  language consisting of multiplication expressions and difference
+  expressions:
+
+<pre>(define-struct diff-exp (rand1 rand2))
+(define-struct mult-exp (rand1 rand2))
+
+;; An Expr is one of
+;; -- (make-diff-exp Number Number)
+;; -- (make-mult-exp Number Number)
+;; Interpretation: a diff-exp represents a difference,
+;; and a mult-exp represents a multiplication
+</pre>
+
+  Design a program <kbd>expr-to-image</kbd> that renders an Expr as an
+  image.  Your function should consume an Expr and a boolean flag, and
+  produce an image.  The boolean flag determines whether the Expr
+  should be rendered as a prefix expression or an infix expression.
+
+  <p><strong>Domain knowledge:</strong> Use parentheses to surround
+  the rendering of compound Exprs, no matter whether they are in prefix
+  or infix notation.  The operator should be separated from the operands
+  by one "string space" and the operands should be separated from each
+  other by the same space.  Do not separate the parentheses from either
+  the operator or the operands.  All text should be 11pt and black.
+  </p>
+
+  <p><strong>Hint:</strong> For this problem, don't use
+  <kbd>place-image</kbd> or <kbd>empty-scene</kbd>; just assemble the
+  image using the image-combining functions in
+  <kbd>2htdp/image</kbd>. </p>
+
+  <p>Here are some examples, along with the output your program should
+  produce:</p>
+  <img src="./CS 5010  Problem Set 1_files/ps01-render.jpg">
+  </li>
+
+<p>Your program should <kbd>provide</kbd> the following functions:</p>
+
+  <pre>make-diff-exp
+diff-exp-rand1
+diff-exp-rand2
+make-mult-exp
+mult-exp-rand1
+mult-exp-rand2
+expr-to-image
+</pre>
+
+
+
+
+
+<li> This exercise is based on Exercise 90 in HtDP/2e. As in that
+exercise, you are to design a set of
+functions that illustrate the workings of a finite-state machine for
+accepting strings that match the regular expression <kbd>a (b | c)*
+d</kbd> .  However, rather than having a graphical illustration, do
+the following:
+
+  First, perform an information analysis and design the data
+  representation for the states of your machine.  You may wish to
+  write down a state-transition diagram (like the ones <a href="https://www.google.com/search?num=10&hl=en&site=imghp&tbm=isch&source=hp&biw=1109&bih=698&q=state+transition+diagrams&oq=state-transiti&gs_l=img.1.0.0i33l10.1619.3742.0.6264.14.14.0.0.0.0.108.1368.9j5.14.0...0.0...1ac.Ynu6MrP4nAA">here</a>) to illustrate the meaning of
+  your state.  Keep your diagram as simple as possible.
+
+<p> KeyEvents of length greater than 1 should be ignored, that is, any
+such KeyEvent should leave the machine's state unchanged.  If the
+machine encounters a bad letter or a letter out of sequence, it should
+go to an error state.  Once the machine is in an error state, it stays
+there on any input.</p>
+  
+
+  Design the following functions and <kbd>provide</kbd> them in your file:
+
+  <pre>initial-state : Number -&gt; State
+Ignores its argument and returns a representation of the initial state
+of your machine
+
+next-state : State KeyEvent -&gt; State
+Given a state of your machine, returns the state that should follow
+the given key event.  A key event that is to be discarded should leave the
+state unchanged.
+
+final-state? : State -&gt; Boolean
+Returns true iff the state is a final (accepting) state
+
+error-state? : State -&gt; Boolean
+Returns true if the string seen so far cannot possibly be extended to
+match the regular expression.
+</pre>
+
+<p>We will be doing automated testing for this problem.  To facilitate
+this, please put a copy of <a href="http://www.ccs.neu.edu/home/wand/cs5010/problem-sets/extras.rkt">extras.rkt</a> in the
+folder with your solution, and include the following at the top of
+your file:
+</p>
+
+<pre>(require rackunit)
+(require rackunit/text-ui)
+(require "extras.rkt")
+
+(provide initial-state next-state final-state? error-state?)
+</pre>
+
+</li>
+
+
+
+
+
+
+<!-- <li>Alternate problem: Exercise 90 (regexp).  Need to -->
+<!-- write data definition for the states.  Pay careful attention to the -->
+<!-- discussion of itemization data in FallingCat. </li> -->
+
+</ol>
+
+
+
+<hr>
+<address></address>
+<font size="-1">
+<p align="right">
+<!-- hhmts start -->
+Last modified: Sun Aug 26 17:57:15 -0400 2012 <!-- hhmts end -->
+ 
+</p></font><div><embed id="lingoes_plugin_object" type="application/lingoes-npruntime-capture-word-plugin" hidden="true" width="0" height="0"></div></body></html>

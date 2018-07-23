@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
+<!-- saved from url=(0062)http://www.ccs.neu.edu/home/wand/cs5010/problem-sets/ps02.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<title>CS 5010: Problem Set 2</title>
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 2_files/course.css">
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 2_files/problem-sets.css">
+</head>
+
+<body>
+<h1>CS 5010: Problem Set 2</h1>
+
+<p>
+<strong>Out:</strong> Tuesday, September 18, 2012
+
+</p><p><strong>Due:</strong> Wednesday, September 26, 2012 at 600pm
+</p>
+
+<p>
+The goal of this problem set is to help you design functions
+that deal with arbitrarily large data.
+</p>
+
+
+<p>Remember that you must follow the design recipe.  Your deliverables
+  include the data analysis (including template), contract and purpose
+  header, examples, code, and tests. You must also include your
+  laboratory notebook.</p>
+
+<hr>
+
+<h4>Finger Exercises/Drill Problems:</h4>
+
+<p>All problems are from the second edition of HtDP unless otherwise
+specified.</p>
+
+<ol>
+  <li>Exercise 115 (pos?) </li>
+  <li>Exercise 116 (all-true)</li>
+  <li>Exercise 117 (juxtapose)</li>
+  <li>Exercise 118 (ill-sized?)</li>
+  <li>Exercise 125 (add-to-pi and add)</li>
+  <li>Exercise 127 (row-col)</li>
+</ol>
+
+<hr>
+
+<h2>Required Exercises</h2>
+
+<p>You may use DrScheme's HtDP Beginning Student Language to solve the
+  problems, or you may switch to the Intermediate Student Language if
+  you prefer.  </p>
+
+<p>For these problems, make a copy of <a href="http://www.ccs.neu.edu/home/wand/cs5010/problem-sets/extras.rkt">extras.rkt</a> and put it in the
+folder with your solutions.  Then import this library by including the line
+
+</p><pre>(require "extras.rkt")
+</pre>
+
+at the top of your file with the other requires.  Then, for each
+problem, put in lines that say
+
+<pre>(provide <em>function</em>)
+</pre>
+
+for each deliverable function.  Thus, for problem 1, the top of your
+file should say
+
+<pre>(require rackunit)
+(require rackunit/textui)
+(require "extras.rkt")
+
+(provide price-of-order)
+(provide inventory-increase-prices)
+(provide make-item item-sku item-name item-manufacturer
+ item-unit-price item-in-stock)
+
+</pre>
+<p></p>
+
+<p>This will allow our testing framework to import your file and do
+automated testing on it.</p>
+
+<hr>
+
+<ol>
+
+
+  <li>Consider an inventory represented as a list of items.
+
+<pre>(define-struct item (sku name manufacturer unit-price in-stock))
+;; An Item is a (make-item Number String String Number Number)
+;; Interpretation:
+;; sku is the Stock Number of this item
+;; unit-price is the price per unit of this item
+;; in-stock is the number of this item in stock.
+;; Invariant: in-stock is &gt;= 0.
+
+;; An Inventory is a ListOf&lt;Item&gt;.
+;; Invariant: In any inventory, there is at most one item with a given
+;; sku. 
+
+</pre>
+
+  <p>Design a program <kbd>price-of-order</kbd> that takes an
+  inventory, a sku that appears in the inventory, and a quantity, and
+  returns the price for that order (the quantity times the unit price
+  for that item).  </p>
+
+  <p> Design a program <kbd>inventory-increase-prices</kbd> that takes
+  an inventory, a manufacturer, and a percentage, and returns an
+  inventory like the original, except that all items by that
+  manufacturer have their unit prices increased by the specified
+  percentage, that is:
+
+</p><pre>newprice = oldprice * (1 + percentage)
+</pre>
+  <p></p>
+
+  <p>For example, if the old price is 2.00 and the percentage is .10,
+  then the new price should be 2.20.</p>
+
+  <p>Provide the two functions above, plus the functions for
+  manipulating items, as in the introduction above.</p>
+
+  </li>
+
+  <li>(Draggable Images) Write a universe program that displays a
+    selectable, draggable rectangle.  More specifically:
+
+  <ul>
+    <li> your program should start by displaying a solid green
+    rectangle 100 pixels wide and 60 pixels high on a 400 x 300 scene.
+    
+    </li><li>Depressing the mouse button within the rectangle causes the
+    rectangle to be "selected".  This is shown visually by replacing
+    the solid green rectangle by a green outline rectangle.  The
+    location of the mouse should be indicated by a solid red circle of
+    radius 5 pixels. Simply pressing the mouse button, without moving
+    the mouse, should not cause the rectangle to move
+    on the canvas.</li>
+
+    <li>Once the rectangle has been selected, you should be able to
+    drag it around the Universe canvas with the mouse.  As you drag
+    it, the position of the mouse within the rectangle (as indicated
+    by the red circle), should not change.  When the mouse button is
+    released, the rectangle should go back to its unselected state
+    (solid green) in its new location.</li>
+  </ul>
+
+  <p>Here's a small demo:</p>
+
+<p></p><center>
+  <iframe src="./CS 5010  Problem Set 2_files/ps02-draggable-rectangle.htm" width="640" height="360"></iframe>
+</center> 
+<p></p>
+<p>Provide the following functions:
+</p><pre>run : Any -&gt; World
+Ignores its argument and runs the world. Returns the final state of the world.
+
+initial-world : Any -&gt; World
+Ignores its argument and returns the initial world.
+
+world-to-center : World -&gt; Posn
+Given a world, returns the coordinates of the center of the rectangle
+as a Posn
+
+world-selected? : World -&gt; Boolean
+Given a world, returns true iff the rectangle is selected.
+
+world-after-mouse-event : World Number Number MouseEvent -&gt; World
+Returns the world that follows the given event mouse event.
+</pre>
+
+
+
+
+</li>
+
+  
+<li> (Balls in a Box) Develop a program to do the following: <p>
+
+</p><ul>
+  <li>Your program should display some balls bouncing on a
+  canvas.</li>
+  <li>The program starts with a canvas 300 pixels wide and 400 pixels
+  high, with no balls.</li>
+  <li>Hitting the "n" key should create a new ball on the canvas.  The
+  first ball should appear tangent to the top of the canvas; each
+  consecutive ball should appear one ball-width farther down on the
+  canvas.  When they appear, all balls should be halfway between the
+  left and right edges of the canvas and should be travelling right.</li>
+  <li>The ball should bounce off the left and right sides of the
+  canvas.  Bouncing is defined as follows:  if the ball would go past
+  the left or right side, then at the next tick it should appear
+  tangent to the wall, travelling in the opposite direction.</li>
+  <!-- <li>You can select a ball by doing a button-down inside the ball. -->
+  <!-- When a ball is selected, it snaps to the position of the mouse, it -->
+  <!-- stops moving, and you can drag it with -->
+  <!-- the mouse.  It becomes unselected when you do a mouse-up.</li> -->
+  <!-- <li>The balls should be displayed as a circle with radius 20.  An -->
+  <!-- unselected ball should be displayed as an outline; a selected ball -->
+  <!-- should be displayed solid.</li> -->
+  <li>In addition to the balls, you should display the number of balls
+  currently on the canvas.</li> 
+</ul>
+
+<p>Here's a small demo:</p>
+
+<p></p><center>
+  <iframe src="./CS 5010  Problem Set 2_files/ps02-bouncing-balls.htm" width="640" height="360"></iframe>
+</center> 
+<p></p>
+
+<p>Provide the following functions:
+</p><pre>run : Any -&gt; World
+Ignores its argument and runs the world. Returns the final state of the world.
+
+world-to-balls : World -&gt; ListOf&lt;Ball&gt;
+Given a world, returns the list of balls in the world.
+
+ball-to-center : Ball -&gt; Posn
+Given a ball, returns the coordinates of its center as a Posn.
+
+world-after-tick : World -&gt; World
+Returns the world that follows the given world after a tick.
+
+world-after-key-event : World KeyEvent -&gt; World
+Returns the world that follows the given world after the given key event.
+</pre>
+
+<p></p>
+
+</li>
+
+</ol>
+
+<hr>
+<address></address>
+<font size="-1">
+<p align="right">
+<!-- hhmts start -->
+Last modified: Tue Sep 04 18:21:43 -0400 2012 <!-- hhmts end -->
+ 
+</p></font><div><embed id="lingoes_plugin_object" type="application/lingoes-npruntime-capture-word-plugin" hidden="true" width="0" height="0"></div></body></html>

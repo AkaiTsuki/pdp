@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
+<!-- saved from url=(0059)http://www.ccs.neu.edu/course/cs5010/problem-sets/ps05.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<title>CS 5010: Problem Set 5</title>
+<link type="text/css" rel="stylesheet" href="./CS 5010  Problem Set 5_files/course.css">
+
+<!-- these span styles are now in course.css -->
+<!-- .new {color:red;} -->
+<!-- .strike {color:gray; text-decoration:line-through;} -->
+
+</head>
+
+<body>
+<h1>CS 5010: Problem Set 5</h1>
+
+<!-- Be sure to change the problem set number both in the title and -->
+<!-- the h1! -->
+
+<p>
+<strong>Out:</strong> Tuesday, October 16, 2012
+
+</p><p><strong>Due:</strong> Wednesday, October 24, 2012
+at 600pm. 
+</p>
+
+<p>
+The goal of this problem set is to give you practice using
+accumulators.
+<!-- Note that not every problem here requires an -->
+<!-- accumulator.  If you write a version without an accumulator, -->
+<!-- stress-test it to see if an accumulator might help.  Don't add an -->
+<!-- accumulator if you get linear behavior without one. -->
+</p>
+
+<p>Remember that you must follow the design recipe. This means that
+your purpose statements should contain a<strong> WHERE</strong> clause any time you use
+an accumulator.  The phrasing <strong>GIVEN ... WHERE ... RETURNS</strong> is recommended but
+not required.</p>
+
+<p>You do not need to write a non-accumulator version for these functions.</p>
+
+<p>These problems are somewhat more complex than many of the problems
+we've seen so far.  So for each problem, write a paragraph or two near
+the top of your file, explaining your approach and what you did so
+that the TA will be able to understand your algorithm <strong>BEFORE
+READING ANY OF THE CODE</strong>.  This paragraph should usually
+include an English description of your accumulator and what portion of
+the context it accumulates.</p>
+
+
+
+
+<p>You must use DrScheme's HtDP Intermediate Student Language with
+  Lambda. Use refactoring to avoid duplication whenever it is
+  helpful. Use list abstractions like filter, fold, and map whenever
+  they are helpful. As before, you will be penalized for failing to
+  use these when they are "obviously" useful. </p>
+
+
+<hr>
+
+<h2>Finger Exercises:</h2>
+
+<ul>
+  <li>Exercises 31.3.4-7.  Do these both with and without accumulators
+where appropriate.</li>
+
+  <li>Design a function <kbd>repeats-in</kbd> that takes a list of
+  numbers and returns a list consisting of only those numbers that
+  appear more than once consecutively. For example:
+
+<pre>(report-repeats (list 12 12 3 4 7 7 7 12 5 7 7 8 8 12 12 12 15 12))
+= (list 12 7 7 8 12)
+</pre>
+
+  <p>This reports only consecutive repeated elements-- note that 7 and 12
+  appear twice in the result of the example because they appear in
+  consecutive repeats twice, and that 7 appears repeated in the answer
+  because the input contains two runs of sevens with no other repeated
+  elements between them.</p></li>
+
+</ul>
+
+<hr>
+
+<h2>Required Exercises</h2>
+
+<ol> <p></p>   
+
+
+<li>
+Consider the outline of a piece of text, for example:
+<pre>1 The first section
+1.1 A subsection with no subsections
+1.2 Another subsection
+1.2.1 This is a subsection of 1.2
+1.2.2 This is another subsection of 1.2
+1.3 The last subsection of 1
+2 Another section
+2.1 More stuff
+2.2 Still more stuff
+</pre>
+
+<p>We could represent such an outline as a list with one element per
+  section or subsection.  Each element of the list consists of two
+  members: the section number, represented as a list of numbers, and a
+  string.
+</p>
+  
+<p> In this representation, the outline above
+  would be represented as
+</p><pre>(((1) "The first section")
+ ((1 1) "A subsection with no subsections")
+ ((1 2) "Another subsection")
+ ((1 2 1) "This is a subsection of 1.2")
+ ((1 2 2) "This is another subsection of 1.2")
+ ((1 3) "The last subsection of 1")
+ ((2) "Another section")
+ ((2 1) "More stuff")
+ ((2 2) "Still more stuff"))
+</pre>
+<p></p>
+
+<p>We'll call this the <em>flat-list</em> representation.</p>
+
+<p>A different representation would represent an outline as a
+list of sections, where a section contains a title, which is
+a string, and a list of subsections.  </p>
+
+<p>Under this representation, the outline above would be represented as
+
+</p><pre>(("The first section"
+  ("A subsection with no subsections")
+  ("Another subsection"
+    ("This is a subsection of 1.2")
+    ("This is another subsection of 1.2"))
+  ("The last subsection of 1"))
+ ("Another section"
+  ("More stuff")
+  ("Still more stuff")))
+</pre>
+<p></p>
+
+<p>We'll call this the <em>nested-list</em> representation.</p>
+<ol>
+  <li>Write out data definitions for each of these representations.
+  </li>
+
+  <li> Design and <a href="http://www.ccs.neu.edu/course/cs5010/problem-sets/extras.rkt">provide</a> a function
+<kbd>nested-to-flat</kbd> that translates from the nested
+representation to the flat representation.
+
+  You should switch to the "write" output representation in DrRacket
+(Choose Language &gt; Show Details &gt; Output Style &gt; 'write') so that your
+output will look exactly like the ones above.  With this output
+representation, your interaction should look like </li>
+
+<pre>&gt;  (nested-to-flat
+    '(("The first section"
+       ("A subsection with no subsections")
+       ("Another subsection"
+        ("This is a subsection of 1.2")
+        ("This is another subsection of 1.2"))
+       ("The last subsection of 1"))
+      ("Another section"
+       ("More stuff")
+       ("Still more stuff"))))
+(((1) "The first section")
+ ((1 1) "A subsection with no subsections")
+ ((1 2) "Another subsection")
+ ((1 2 1) "This is a subsection of 1.2")
+ ((1 2 2) "This is another subsection of 1.2")
+ ((1 3) "The last subsection of 1")
+ ((2) "Another section")
+ ((2 1) "More stuff")
+ ((2 2) "Still more stuff"))
+&gt; 
+</pre>
+
+  <p>There should be no structs in your input or output, just
+  lists.</p>
+  
+</ol>
+
+ </li><li> Extend the expr-to-image problem from Problem Set 4, except that
+  expr-to-image now takes an additional argument representing the maximum
+  width of the image in pixels. We use the additional information as
+  follows:
+
+  <ol><p></p>
+    <li>The expression should be rendered on a single line if it fits
+    within the specified width.</li>
+    <li>Otherwise, render the subexpressions in a stacked fashion, as in
+    problem set 4. </li>
+    <li>All subexpressions must fit within the space allotted minus the
+    space for surrounding parentheses, if any.  Apply the rendering
+    algorithm recursively if needed. </li>
+    <li>Note: there should be no spaces preceding a right
+    parenthesis.  Look at the examples below and compare them to the
+    corresponding examples in Problem Set 4. <strong>HINT:</strong>
+    The general problem is something like "render the given
+    expression, followed by some number of right parens, all
+    in the given width."  This is what you get to when, for example,
+    you get to the last operand of an expression that is to be stacked.
+    </li>
+    <li>The algorithm may determine that the given expression cannot fit
+    within the allotted space.  In this case, the algorithm should raise
+    an appropriate error, using the function <kbd>error</kbd>. 
+  </li></ol>
+
+  <p>Use the 2htdp/image library and 12 point black text.</p>
+
+  <p>You should provide a function</p>
+
+  <pre>expr-to-image : Expr Number -&gt; Image
+Converts the given Expr to an image limited to the given width
+</pre>
+
+  <p>In addition, you should provide make-sum-exp, sum-exp-exprs,
+  make-mult-exp, and mult-exp-exprs.
+</p>
+
+  <!-- NEXT TIME: Put this back: -->
+
+  <!-- You should avoid creating any image just to measure it and throw it -->
+  <!-- away, though sometimes this may be unavoidable.</p> -->
+
+  <p>Here are some examples (sorry, this image shows diff-exps instead
+  of sum-exps):
+    
+  </p><p><img src="./CS 5010  Problem Set 5_files/ps05-render.jpg"></p>
+
+  <p>Observe in particular the rendering of hw-example-2 at width
+  100.  Here we have two sets of closing parentheses that need to be
+  tucked under their wider neighbors.</p>
+
+  <p>Testing this problem is tricky.  Here are two suggestions:  You
+  can visually check some test cases when you load by putting
+  text in your .rkt file like</p>
+
+  <pre>"this should be on one line:"
+(expr-to-image hw-example-1 100)
+"this should be on three lines:"
+(expr-to-image hw-example-1 50)
+</pre>
+
+  <p>You can also check silently to see that your images have the
+  right height by saying something like:</p>
+
+  <pre>(define line-height (image-height (text "foo" 11 "black")))
+(define (multi-line-height n)
+  (+ (* n line-height) n))
+
+(check-equal?
+ (image-height (expr-to-image hw-example-1 100))
+ (multi-line-height 1))
+</pre>
+
+  <p>This formula for multi-line-height worked on my Windows machine.
+  You may need to do something different.</p>
+
+<p>This problem requires careful wishlist management.  To help you
+  (and us) keep track of your organization, keep your wishlist as a
+  tree.  Please turn in some tree-like representation of the functions
+  in your implementation, with <kbd>expr-to-image</kbd> at the root, and an
+  arrow from each function to the functions that it calls as helpers.
+  (Recursions don't count).  Show only the important functions.  This
+  needn't be fancy. You can use a tool like <a href="http://www.umlet.com/">UMLet</a> or PowerPoint if you like,
+  but don't spend too much time on it.  While we would like to have
+  this as a PDF in the repository, it will suffice to bring a paper
+  copy to the codewalk.  </p>
+
+  <p>Another hint: Abstraction is good, but don't create abstractions
+  if they're ugly.  You needn't be too aggressive about creating
+  generalizations.  The recipe says not to abstract until you have
+  working code, and you should take this advice seriously.  Don't
+  worry about trying to use expr-fold-- among other things, expr-fold
+  doesn't play nicely with accumulators. On the other hand, if you see
+  an obvious place for a foldr or a map, you should use it.</p>
+
+</li>
+
+
+
+
+
+
+</ol>
+
+<hr>
+<address></address>
+<font size="-1">
+<p align="right">
+<!-- hhmts start -->
+Last modified: Thu Oct 18 22:55:45 -0400 2012 <!-- hhmts end -->
+ 
+</p></font><div><embed id="lingoes_plugin_object" type="application/lingoes-npruntime-capture-word-plugin" hidden="true" width="0" height="0"></div></body></html>
